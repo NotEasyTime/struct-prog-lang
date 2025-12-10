@@ -523,6 +523,25 @@ def evaluate(ast, environment):
         if value_status == "exit": return value, "exit"
 
         target_base[target_index] = value
+
+        # Watcher: 
+        try:
+            watch_name = None
+            scope_for_watch = environment
+            while scope_for_watch is not None:
+                if isinstance(scope_for_watch, dict) and "$watch" in scope_for_watch:
+                    watch_name = scope_for_watch["$watch"]
+                    break
+                scope_for_watch = scope_for_watch.get("$parent") if isinstance(scope_for_watch, dict) else None
+
+            if target.get("tag") == "identifier" and watch_name is not None and target.get("value") == watch_name:
+
+                print(f"[watch] {watch_name} = {repr(value)}")
+
+        except Exception:
+
+            pass
+
         return value, None
 
     if ast["tag"] == "return":

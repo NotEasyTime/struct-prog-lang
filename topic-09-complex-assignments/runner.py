@@ -12,9 +12,21 @@ def main():
     environment = {}
     
     # Check for command line arguments
-    if len(sys.argv) > 1:
-        # Filename provided, read and execute it
-        with open(sys.argv[1], 'r') as f:
+    watch_name = None
+    filename = None
+
+    #  watch=<identifier> and filename
+    for arg in sys.argv[1:]:
+        if arg.startswith("watch="):
+            watch_name = arg.split("=", 1)[1]
+        elif filename is None:
+            filename = arg
+
+    if watch_name:
+        environment["$watch"] = watch_name
+
+    if filename:
+        with open(filename, 'r') as f:
             source_code = f.read()
         try:
             tokens = tokenize(source_code)
